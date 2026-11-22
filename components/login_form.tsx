@@ -9,7 +9,7 @@ import { useState } from "react";
 
 import LoadingModal from '@/components/loading_modal'
 import { useRouter } from 'next/navigation';
-import { setCookies } from '@/app/client_utility';
+import { login } from '@/app/server_actions'
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -29,14 +29,10 @@ function LoginForm() {
       return;
     }
 
-    console.log("Request login");
-
-    setCookies({
-      "access": "12345",
-      "user": "tester"
-    })
-
-    window.location.href = "/stock-analysis";
+    const response = await login(username, password);
+    console.log("Login response:", response);
+    setError(response?.error);
+    setShowLoadingModal(false);
   };
   
   return (

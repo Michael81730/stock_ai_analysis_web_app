@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
 import { useState } from "react";
+import { signup } from '@/app/server_actions'
 
 function SignupForm() {
   const [username, setUsername] = useState("");
@@ -30,9 +31,9 @@ function SignupForm() {
       return;
     }
 
-    console.log("Request signup");
-
-    window.location.href = "/login";
+    const response = await signup(username, email, password);
+    console.log("Signup response:", response);
+    setError(response?.error);
   };
 
   return (

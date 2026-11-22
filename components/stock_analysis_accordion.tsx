@@ -9,14 +9,17 @@ import { useState } from "react";
 import Alert from 'react-bootstrap/Alert';
 import LoadingModal from '@/components/loading_modal'
 import ReactMarkdown from 'react-markdown';
+import StockMetricsTable from '@/components/stock_metrics_table';
+import { getStockMetrics } from '@/app/server_actions';
 
 function StockAnalysisAccordion() {
     const [activeKey, setActiveKey] = useState("0");
     const [stockId, setStockId] = useState("");
     const [selectedStockId, setSelectedStockId] = useState("");
     const [error, setError] = useState<string|null>(null);
+    const [stockMetrics, setStockMetrics] = useState<{ Metric: string; Value: string }[]>([]);
     const [selectedAiPrompt, setSelectedAiPrompt] = useState("1");
-    const [customAiPrompt, setCustomAiPrompt] = useState("");
+    const [customAiPrompt, setCustomAiPrompt] = useState("");     
     const [aiResponse, setAiResponse] = useState("");
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const [loadingModalText, setLoadingModalText] = useState("");
@@ -47,8 +50,15 @@ function StockAnalysisAccordion() {
         return;
       }
 
-      setError(null);
+      const response = await getStockMetrics(selectedStockId);
+      console.log("getStockMetrics response: ", response);
+      if (response.error != null) {
+        setError(response.error);
+        return;
+      }
 
+      setError(null);
+      setStockMetrics(response.data.metrics??[]);
     };
 
     const handleChangeAiPrompt = (e: any)=>{
@@ -110,6 +120,12 @@ function StockAnalysisAccordion() {
             <Button variant="secondary" onClick={handleGetMetricsBtn}>
                 Fetch metrics data
             </Button>
+            {
+              stockMetrics.length == 0 ? <></> :
+              <div className="mt-4 px-3">
+                <StockMetricsTable stockMetrics={stockMetrics}></StockMetricsTable>
+              </div>
+            }
           </Accordion.Body>
         </Accordion.Item>
         <Accordion.Item eventKey="2">

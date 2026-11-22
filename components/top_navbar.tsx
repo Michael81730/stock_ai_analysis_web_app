@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Image from 'react-bootstrap/Image';
 import { useState, useEffect } from "react";
 import { deleteCookie, getCookie } from '@/app/client_utility';
+import { logout } from '@/app/server_actions';
 
 function TopNavbar({authenticated}: any) {
   const [username, setUsername] = useState("");
@@ -22,9 +23,7 @@ function TopNavbar({authenticated}: any) {
     e.preventDefault();
     console.log("Clicked logout button!");
 
-    deleteCookie("access");
-    deleteCookie("user");
-    window.location.href = "/login";
+    await logout();
   };
 
   return (
